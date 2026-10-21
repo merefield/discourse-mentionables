@@ -172,6 +172,20 @@ RSpec.describe Mentionables::TopicTable do
     end
   end
 
+  it "generates valid slugs from names with leading and trailing underscores" do
+    source_rows(
+      [
+        ["https://example.com/book", "_book", ""],
+        ["https://example.com/guide", "guide_", ""],
+        ["https://example.com/empty", "`___`", ""],
+        ["https://example.com/long", "_#{"a" * 200}", ""],
+      ],
+    )
+
+    expect(described_class.new.import.success).to eq(4)
+    expect(MentionableItem.pluck(:slug)).to contain_exactly("book", "guide", "item", "a" * 179)
+  end
+
   it "rolls back deletion and updates if an override conflicts with a preserved slug" do
     existing =
       MentionableItem.create!(url: "https://example.com/kept", name: "Original", slug: "kept")

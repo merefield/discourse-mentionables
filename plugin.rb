@@ -6,7 +6,7 @@
 # required_version: 2026.10.0-latest
 # authors: Robert Barrow, Angus McLeod
 # contact_emails: development@pavilion.tech
-# url: https://github.com/paviliondev/discourse-mentionables
+# url: https://github.com/merefield/discourse-mentionables
 
 enabled_site_setting :mentionables_enabled
 add_admin_route "mentionables.title", "mentionables", use_new_show_route: true

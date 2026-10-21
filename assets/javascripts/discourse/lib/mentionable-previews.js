@@ -8,10 +8,11 @@ export function decorateMentionablePreviews(element, helper, tooltip) {
   const items = Site.current().mentionable_items || [];
 
   for (const anchor of element.querySelectorAll("a.mentionable-item")) {
-    const item = items.find((candidate) =>
-      anchor.dataset.mentionableSlug
-        ? candidate.slug === anchor.dataset.mentionableSlug
-        : candidate.url === anchor.getAttribute("href")
+    const item = items.find(
+      (candidate) =>
+        candidate.url === anchor.getAttribute("href") &&
+        (!anchor.dataset.mentionableSlug ||
+          candidate.slug === anchor.dataset.mentionableSlug)
     );
     if (!item) {
       continue;

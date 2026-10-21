@@ -85,6 +85,28 @@ acceptance("Mentionables | composer", function (needs) {
     assert.dom(".d-editor-preview aside.onebox h3").hasText("Book preview");
     assert.strictEqual(oneboxRequests[0].topic_id, "280");
   });
+
+  test("restores every occurrence of a cached URL within a single onebox slot", async function (assert) {
+    this.siteSettings.max_oneboxes_per_post = 1;
+    await visit("/");
+    await click("#create-topic");
+    await fillIn("#reply-title", "Recommended reading");
+    await fillIn(".d-editor-input", "+example-book\n\n+example-book");
+    assert.dom(".d-editor-preview aside.onebox").exists({ count: 2 });
+    const initialRequests = oneboxRequests.length;
+
+    await fillIn(
+      ".d-editor-input",
+      "+example-book\n\n+example-book\n\nAn updated recommendation."
+    );
+    assert.dom(".d-editor-preview aside.onebox").exists({ count: 2 });
+    assert.dom(".d-editor-preview a.onebox").doesNotExist();
+    assert.strictEqual(
+      oneboxRequests.length,
+      initialRequests,
+      "does not refetch after editing"
+    );
+  });
 });
 
 acceptance("Mentionables | restricted category oneboxes", function (needs) {

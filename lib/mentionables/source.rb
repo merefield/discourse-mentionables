@@ -145,7 +145,13 @@ class ::Mentionables::Source
       .select { |record| record.slug.blank? }
       .sort_by(&:url)
       .each do |record|
-        base = record.name.parameterize.first(180).sub(/[^\p{L}\p{N}]+\z/u, "").presence || "item"
+        base =
+          record
+            .name
+            .parameterize
+            .first(180)
+            .gsub(/\A[^\p{L}\p{N}]+|[^\p{L}\p{N}]+\z/u, "")
+            .presence || "item"
         slug = base
         counter = 0
         while used.include?(slug)

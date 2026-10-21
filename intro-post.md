@@ -3,7 +3,7 @@
 |                      |                        |                                                                                                                                                                   |
 | -------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | :information_source: | **Summary**            | Turn a table in a topic into searchable items that members can mention with `+`, complete with links and onebox previews.                                         |
-| :hammer_and_wrench:  | **Repository**         | [Discourse Mentionables](https://github.com/merefield-pro-extensions/discourse-mentionables) — private repository; access required.                               |
+| :hammer_and_wrench:  | **Repository**         | [Discourse Mentionables](https://github.com/merefield/discourse-mentionables)                                                                                     |
 | :open_book:          | **Installation guide** | [Install plugins on a self-hosted Discourse site](https://meta.discourse.org/t/install-plugins-on-a-self-hosted-site/19157)                                       |
 | :heart:              | **Sponsorship**        | Please consider [sponsoring ongoing development](https://github.com/sponsors/merefield) to help keep these plugins maintained and working with current Discourse. |
 
@@ -64,8 +64,8 @@ preview; the **Open original page** link in the preview takes you to the target.
 
 ### Quick setup
 
-1. Install the base plugin using the installation guide above. Your server needs
-   Git access to the private repository. Rebuild Discourse after installation.
+1. Install the base plugin using the installation guide above. Rebuild Discourse
+   after installation.
 2. Create a topic for your catalogue. As an admin, use **Insert mentionables
    table** in the composer toolbar or paste this table into the opening post:
 

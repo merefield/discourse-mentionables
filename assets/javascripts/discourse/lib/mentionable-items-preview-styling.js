@@ -24,6 +24,7 @@ export function linkSeenMentionableItems(element, siteSettings) {
   let loadedOneboxes = element.querySelectorAll(
     "aside.onebox, a.loading-onebox, a.inline-onebox"
   ).length;
+  const restoredUrls = new Set();
   for (const span of element.querySelectorAll("span.mentionable-item")) {
     const item = items.find(
       (candidate) => candidate.slug === span.textContent.slice(1)
@@ -48,11 +49,18 @@ export function linkSeenMentionableItems(element, siteSettings) {
 
     // These anchors are created after Markdown's cached-onebox replacement.
     // Leave uncached anchors for the composer's contextual, queued loader.
-    if (isStandalone && loadedOneboxes < siteSettings.max_oneboxes_per_post) {
+    if (
+      isStandalone &&
+      (restoredUrls.has(item.url) ||
+        loadedOneboxes < siteSettings.max_oneboxes_per_post)
+    ) {
       const cached = lookupCache(item.url);
       if (cached) {
         anchor.replaceWith(...domFromString(cached));
-        loadedOneboxes++;
+        if (!restoredUrls.has(item.url)) {
+          restoredUrls.add(item.url);
+          loadedOneboxes++;
+        }
       }
     }
   }

@@ -5,9 +5,8 @@ items are searchable in the composer using `+`. Selecting a suggestion links to
 the item's URL, using its name as the visible label. Autocomplete works in both
 the Markdown and rich text composers.
 
-[Source code](https://github.com/merefield-pro-extensions/discourse-mentionables)
-and [issue tracker](https://github.com/merefield-pro-extensions/discourse-mentionables/issues)
-require access to this private repository.
+[Source code](https://github.com/merefield/discourse-mentionables)
+and [issue tracker](https://github.com/merefield/discourse-mentionables/issues).
 
 For a forum-ready introduction, see [intro-post.md](intro-post.md).
 
@@ -42,20 +41,17 @@ clone commands under `hooks` → `after_code` in
 `/var/discourse/containers/app.yml`:
 
 ```yaml
-- git clone https://github.com/merefield-pro-extensions/discourse-mentionables.git
+- git clone https://github.com/merefield/discourse-mentionables.git
 ```
 
-Configure Git authentication with read access to this private repository as
-described in the installation guide, so the container can clone it during a
-rebuild. Then rebuild Discourse:
+Then rebuild Discourse:
 
 ```sh
 cd /var/discourse
 ./launcher rebuild app
 ```
 
-For a hosted Discourse site, ask your hosting provider about installing custom
-private plugins.
+For a hosted Discourse site, ask your hosting provider about installing custom plugins.
 
 This version was tested with Discourse `2026.10.0-latest`, core commit
 `5370a6c4fed981028109defb1dace786f1807791`, and Ruby 3.4.
