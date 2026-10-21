@@ -1,10 +1,22 @@
 {
   "name": "discourse-mentionables",
-  "version": "1.0.0",
-  "repository": "git@github.com:paviliondev/discourse-mentionables.git",
-  "author": "Pavilion",
-  "license": "GPL V2",
+  "private": true,
   "devDependencies": {
-    "eslint-config-discourse": "^1.1.8"
-  }
+    "@discourse/lint-configs": "^3.8.2",
+    "eslint": "10.6.0",
+    "prettier": "3.8.1",
+    "stylelint": "17.5.0"
+  },
+  "scripts": {
+    "lint": "pnpm lint:js && pnpm lint:css && pnpm lint:prettier",
+    "lint:js": "eslint assets/javascripts test/javascripts --max-warnings 0",
+    "lint:css": "stylelint 'assets/stylesheets/**/*.scss'",
+    "lint:prettier": "prettier 'assets/**/*.{js,gjs,scss}' 'test/**/*.{js,gjs}' '*.{mjs,cjs,json}' --check",
+    "lint:fix": "pnpm lint:js --fix && pnpm lint:css --fix && pnpm lint:prettier --write"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": "^10"
+  },
+  "packageManager": "pnpm@10.34.5"
 }

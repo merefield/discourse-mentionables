@@ -1,17 +1,21 @@
 en:
-  js:  
+  js:
     mentionables:
+      preview:
+        visit: "Open original page"
       composer:
+        insert_table:
+          title: "Insert mentionables table"
         insert:
           title: "Insert mentionable"
       title: "Mentionables"
-      import: "Start Import"
+      import: "Start import"
       import_started: >
         Your import has started. Depending on the size of your data, it may
         take a while to complete. When it completes you will see a new message in
         the list below, which you can refresh by clicking "Refresh". You can
         safely close this window without affecting the import.
-      delete_all: "Delete All"
+      delete_all: "Delete all"
       data_deleted: >
         We've started to remove all mentionables data from your Discourse database.
         It will take a few minutes for the process to complete. When it completes
@@ -24,6 +28,12 @@ en:
         title: Info
         total: There are currently %{total} mentionable items in the database.
       logs: "Logs"
+      load_more: "Load more"
+      columns:
+        type: "Type"
+        source: "Source"
+        message: "Message"
+        date: "Date"
       log:
         filter: "type, source or message"
         report:
@@ -32,9 +42,14 @@ en:
           success: "%{count} items were successfully imported."
           missing_required: "%{count} items are missing required attributes."
           invalid_format: "%{count} items have an attribute with an invalid format."
-          duplicate: "%{count} items are duplicates."
+          duplicate: "%{count} items have duplicate URLs or explicit slugs."
           failed_to_create: "%{count} items failed to be created for another reason."
-          invalid_slug: "%{count} items have invalid slugs. The slug has been generated from the item name."
+          invalid_slug: "%{count} items have invalid slugs."
+          created: "%{count} items were created."
+          updated: "%{count} items were updated."
+          unchanged: "%{count} items were unchanged."
+          deleted: "%{count} items absent from the source were deleted."
+          error: "Import cancelled: fix the invalid rows or duplicate URLs/slugs and try again. No records were changed."
           missing_required_items: "Items missing required attributes: %{items}."
           invalid_format_items: "Items with an invalid format: %{items}."
           invalid_slug_items: "Items with invalid slugs: %{items}."

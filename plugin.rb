@@ -1,66 +1,63 @@
 # frozen_string_literal: true
 # name: discourse-mentionables
 # about: Allows users to +mention custom data in posts
-# email contacts: robert@pavilion.tech
-# version: 0.5.4
+# version: 0.9.0
+# required_version: 2026.10.0-latest
 # authors: Robert Barrow, Angus McLeod
-# contact_emails: development@pavilion.tech
-# url: https://github.com/paviliondev/discourse-mentionables
-
-gem 'webrick', '1.9.1', require: false
-gem 'httpclient', '2.8.3', require: false
-gem 'retriable', '3.1.2', require: false
-gem 'signet', '0.17.0', require: false
-gem 'os', '1.1.4', require: false
-gem 'memoist', '0.16.2', require: false
-gem 'declarative', '0.0.20', require: false
-gem 'trailblazer-option', '0.1.2', require: false
-gem 'uber', '0.1.0', require: false
-gem 'representable', '3.2.0', require: false
-gem 'googleauth', '1.3.0', require: false
-gem 'google-apis-core', '0.9.1', require: false
-gem 'google-apis-sheets_v4', '0.20.0', require: false
+# url: https://github.com/merefield/discourse-mentionables
 
 enabled_site_setting :mentionables_enabled
-add_admin_route "mentionables.title", "mentionables"
-register_asset 'stylesheets/common.scss'
+add_admin_route "mentionables.title", "mentionables", use_new_show_route: true
+register_asset "stylesheets/common.scss"
 
-#added svg icons
-register_svg_icon 'shopping-cart'
+register_svg_icon "cart-shopping"
+register_svg_icon "table"
 
-after_initialize do
-  %w(
-    ../lib/mentionables/engine.rb
-    ../lib/mentionables/source.rb
-    ../lib/mentionables/sources/google/google_authorization.rb
-    ../lib/mentionables/sources/google/google_sheets.rb
-    ../lib/mentionables/import_result.rb
-    ../lib/mentionables/log.rb
-    ../lib/mentionables/post_process.rb
-    ../app/controllers/mentionables/admin_controller.rb
-    ../app/serializers/mentionables/log_serializer.rb
-    ../app/models/mentionable_item.rb
-    ../config/routes.rb
-    ../jobs/import_mentionable_items.rb
-    ../jobs/destroy_mentionable_items.rb
-  ).each do |path|
-    load File.expand_path(path, __FILE__)
+module ::Mentionables
+  PLUGIN_NAME = "mentionables"
+
+  def self.info
+    { total: MentionableItem.count }
   end
 
-  add_to_serializer(:site, :mentionable_items) do
-    MentionableItem.all
-  end
-
-  on(:before_post_process_cooked) do |doc, post|
-    Mentionables::PostProcess.add_links(doc, post)
+  def self.items_for_client
+    associations = []
+    DiscourseEvent.trigger(:mentionables_preload_items, associations)
+    MentionableItem
+      .includes(associations)
+      .map do |item|
+        attributes = item.as_json(only: %i[id slug name url image_url])
+        DiscourseEvent.trigger(:mentionables_serialize_item, item, attributes)
+        attributes
+      end
   end
 end
 
-DiscourseEvent.on(:custom_wizard_ready) do
-  if defined?(CustomWizard) == 'constant' && CustomWizard.class == Module
-    CustomWizard::Field.register('mentionables', 'discourse-mentionables', ['models', 'lib', 'stylesheets', 'templates'])
+require_relative "lib/mentionables/engine"
+
+after_initialize do
+  add_to_serializer(:site, :mentionable_items) { Mentionables.items_for_client }
+
+  on(:before_post_process_cooked) do |doc, post|
+    Mentionables::PostProcess.add_links(doc, post) if SiteSetting.mentionables_enabled
+  end
+
+  DiscourseEvent.trigger(:mentionables_ready)
+end
+
+on(:custom_wizard_ready) do
+  if defined?(CustomWizard) == "constant" && CustomWizard.class == Module
+    CustomWizard::Field.register(
+      "mentionables",
+      "discourse-mentionables",
+      %w[models lib stylesheets templates],
+    )
     CustomWizard::WizardSerializer.attributes("mentionable_items")
-    CustomWizard::WizardSerializer.public_send(:define_method, "include_mentionable_items?") { SiteSetting.mentionables_enabled }
-    CustomWizard::WizardSerializer.public_send(:define_method, "mentionable_items") { MentionableItem.all }
+    CustomWizard::WizardSerializer.public_send(:define_method, "include_mentionable_items?") do
+      SiteSetting.mentionables_enabled
+    end
+    CustomWizard::WizardSerializer.public_send(:define_method, "mentionable_items") do
+      Mentionables.items_for_client
+    end
   end
 end

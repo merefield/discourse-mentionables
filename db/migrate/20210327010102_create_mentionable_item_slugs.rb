@@ -7,7 +7,10 @@ class CreateMentionableItemSlugs < ActiveRecord::Migration[5.2]
       t.references :mentionable_item
     end
     add_index :mentionable_item_slugs, :name_slug, unique: true
-    add_foreign_key :mentionable_item_slugs, :mentionable_items, column: :mentionable_item_id, unique: true
+    add_foreign_key :mentionable_item_slugs,
+                    :mentionable_items,
+                    column: :mentionable_item_id,
+                    unique: true
   end
   def down
     drop_table :mentionable_item_slugs
