@@ -2,17 +2,12 @@
 
 module Jobs
   class ImportMentionableItems < ::Jobs::Base
-
     sidekiq_options retry: false
 
     def execute(args = {})
-      source_name = SiteSetting.mentionables_source.to_s
-      klass = "Mentionables::#{source_name.camelize}".constantize
+      return unless SiteSetting.mentionables_enabled
 
-      if klass&.respond_to?(:new)
-        source = klass.new
-        source.import
-      end
+      Mentionables::Source.import
     end
   end
 end

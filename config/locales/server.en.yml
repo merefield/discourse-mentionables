@@ -1,22 +1,19 @@
 en:
   site_settings:
     mentionables_enabled: "Enable the Mentionables plugin"
-    mentionables_source: "Mentionables data source"
-    mentionables_onebox_fallback: "Attempt to retrieve mentionable attributes from the url if they are not present in data. This will make imports slower."
-    mentionables_generate_slugs: "Generate a slug from the mentionable name if there is no slug in the data source."
+    mentionables_topic_id: "Topic whose opening post contains the mentionables Markdown table. The topic may be restricted to staff, but imported names, URLs, and images are visible to users of mentionables. Only let trusted people edit the source post."
+    mentionables_onebox_fallback: "Also retrieve missing images and descriptions from a URL preview when a name is supplied. Missing names are always retrieved automatically."
     mentionables_autocomplete_limit: "Maximum number of mentionables to show in composer autocomplete."
-    mentionables_google_spreadsheet_id: "ID of the Google spreadsheet"
-    mentionables_google_worksheet_names: "Names of in-scope source worksheets (tabs)"
-    mentionables_google_worksheet_max_row: "Maximum number of rows scanned"
-    mentionables_google_service_account_email: "Google API Service Account Email"
-    mentionables_google_service_account_private_key: "Google API Service Account Private Key"
     mentionables_composer_button_icon: "Mentionables composer button icon class. See <a href='https://github.com/discourse/discourse/blob/main/lib/svg_sprite/svg_sprite.rb' target='_blank'>Discourse svg sprite classes</a>, and <a href='https://github.com/paviliondev/discourse-mentionables/blob/main/plugin.rb#L34' target='_blank'>Mentionables classes</a>."
 
   mentionables:
     title: Mentionables
     import_did_not_start: "Import did not start as the source importer is not ready."
-    google_sheets:
-      failed_to_authorize: "Failed to authorize with Google. Please check your credentials"
-      no_spreadsheet_url: "Please set a spreadsheet url in the site settings."
-      failed_to_create_session: "Failed to create a Google Drive session."
-      failed_to_retrieve_spreadsheet: "Failed to retrieve the spreadsheet."
+    sync:
+      empty_source: "Import cancelled: the source contains no items. Existing mentionables have been left unchanged. Use Delete all to clear the catalogue explicitly."
+      duplicate_slugs: "Import cancelled: two items would use the same slug. Give each item a unique slug. No records were changed."
+    topic_table:
+      topic_not_configured: "Set mentionables_topic_id to the topic containing your mentionables table."
+      post_not_found: "The source topic or its opening post could not be found. Choose an existing, undeleted topic rather than a personal message."
+      table_not_found: "The opening post needs a table with a lowercase url column. Quoted tables and tables inside code blocks are ignored."
+      duplicate_columns: "The mentionables table has duplicate column names. Use each imported column only once."

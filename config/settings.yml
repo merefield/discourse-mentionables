@@ -2,24 +2,15 @@ plugins:
   mentionables_enabled:
     default: true
     client: true
-  mentionables_source:
-    type: enum
-    default: 'google_sheets'
-    choices:
-      - google_sheets
+  mentionables_topic_id:
+    default: 0
+    min: 0
   mentionables_onebox_fallback: false
-  mentionables_generate_slugs: true
   mentionables_autocomplete_limit:
     default: 5
+    min: 0
+    max: 100
     client: true
-  mentionables_google_spreadsheet_id: ''
-  mentionables_google_worksheet_names:
-    type: list
-    default: 'Sheet1'
-  mentionables_google_worksheet_max_row:
-    default: 300
-  mentionables_google_service_account_private_key: ''
-  mentionables_google_service_account_email: ''
-  mentionables_composer_button_icon: 
-    default: 'plus'
+  mentionables_composer_button_icon:
+    default: "plus"
     client: true

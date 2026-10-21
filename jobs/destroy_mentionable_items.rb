@@ -3,7 +3,9 @@
 module Jobs
   class DestroyMentionableItems < ::Jobs::Base
     def execute(args = {})
-      MentionableItem.destroy_all
+      DistributedMutex.synchronize(Mentionables::Source::MUTEX_KEY, validity: 1.hour) do
+        MentionableItem.transaction { MentionableItem.destroy_all }
+      end
     end
   end
 end

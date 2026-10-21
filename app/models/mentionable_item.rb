@@ -1,53 +1,54 @@
 # frozen_string_literal: true
 
 class MentionableItem < ActiveRecord::Base
-  validates :slug, presence: true, uniqueness: true
+  validates :slug,
+            presence: true,
+            uniqueness: true,
+            format: {
+              with: Mentionables::Source::SLUG_PATTERN,
+            }
+  validates :name, presence: true
+  validates :url, presence: true, uniqueness: true
 
-  before_validation do
-    if SiteSetting.mentionables_onebox_fallback
-      apply_onebox_fallback
-    end
+  def populate_metadata
+    return if url.blank?
 
-    if !self.slug && SiteSetting.mentionables_generate_slugs && self.name
-      self.slug = self.name.parameterize
-    end
+    apply_onebox_fallback if name.blank? || SiteSetting.mentionables_onebox_fallback
+    self.name = url if name.blank?
   end
 
   def self.destroy_all
     self.all.destroy_all
-    Mentionables::Log.create(
-      type: Mentionables::Log.types[:destroy_all],
-      source: nil
-    )
+    Mentionables::Log.create(type: Mentionables::Log.types[:destroy_all], source: nil)
   end
 
   def self.remove!(item)
-    Mentionables
-      .where(url: item[:url])
-      .destroy_all
+    MentionableItem.where(url: item[:url]).destroy_all
   end
 
   def apply_onebox_fallback
     preview = Oneboxer.preview(self.url)
-    document = Nokogiri::HTML(preview)
+    document = Nokogiri.HTML(preview)
 
     return if document.nil?
 
-    [:image_url, :name, :description].each do |key|
+    %i[image_url name description].each do |key|
       value = self.send(key)
 
       if value.blank?
         if key == :image_url
-          value = document.css('.thumbnail').attr('src')
+          value = document.at_css(".thumbnail")&.[]("src")
         elsif key == :name
-          value = document.css('h3 a').inner_html
+          value = document.at_css("h3")&.text&.strip
         elsif key == :description
-          value = document.css('p').inner_html
+          value = document.css("p").text
         end
 
-        self.send("#{key.to_s}=", value) if value.present?
+        self.send("#{key}=", value) if value.present?
       end
     end
+  rescue StandardError => error
+    Rails.logger.warn("Mentionables metadata lookup failed: #{error.class}")
   end
 end
 
@@ -56,14 +57,14 @@ end
 # Table name: mentionable_items
 #
 #  id                  :bigint           not null, primary key
-#  url                 :string           not null
-#  name                :string           not null
-#  slug                :string
-#  image_url           :string
-#  description         :string
 #  affiliate_snippet_1 :string
 #  affiliate_snippet_2 :string
 #  affiliate_snippet_3 :string
+#  description         :string
+#  image_url           :string
+#  name                :string           not null
+#  slug                :string
+#  url                 :string           not null
 #  created_at          :datetime
 #  updated_at          :datetime
 #

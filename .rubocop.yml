@@ -1,5 +1,11 @@
 inherit_gem:
-  rubocop-discourse: default.yml
+  rubocop-discourse: stree-compat.yml
+
+AllCops:
+  Exclude:
+    - "gems/**/*"
+    - "node_modules/**/*"
 
 Discourse/NoAddReferenceOrAliasesActiveRecordMigration:
-  Enabled: false
+  Exclude:
+    - "db/migrate/20210327010102_create_mentionable_item_slugs.rb"

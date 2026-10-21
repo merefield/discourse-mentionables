@@ -1,34 +1,24 @@
 # frozen_string_literal: true
-require_relative '../plugin_helper'
 
-describe MentionableItem do
-  FIXTURE_PATH = "#{Rails.root}/plugins/discourse-mentionables/spec/fixtures"
+require_relative "../plugin_helper"
 
-  before do
-    CSV.foreach("#{FIXTURE_PATH}/required_only.csv", headers: true) do |row|
-      @required_item = row.to_h
-    end
-    CSV.foreach("#{FIXTURE_PATH}/required_and_optional.csv", headers: true) do |row|
-      @required_and_optional_item = row.to_h
-    end
+RSpec.describe MentionableItem do
+  it "requires an explicit slug" do
+    item = described_class.new(url: "https://example.com/book", name: "A good book")
+    expect(item).not_to be_valid
+    item.slug = "my-book"
+    item.save!
+    expect(item.reload.slug).to eq("my-book")
   end
 
-  it "adds missing slug if mentionables_generate_slugs is true" do
-    mentionable_item = described_class.new(@required_item)
-    mentionable_item.save
-    expect(mentionable_item.reload.slug).to eq('bbc')
-  end
-
-  it "does not validate if missing slug and mentionables_generate_slugs is false" do
-    SiteSetting.mentionables_generate_slugs = false
-    mentionable_item = described_class.new(@required_item)
-    expect(mentionable_item).to_not be_valid
-  end
-
-  it "allows user to provide slug" do
-    SiteSetting.mentionables_generate_slugs = false
-    mentionable_item = described_class.new(@required_and_optional_item)
-    mentionable_item.save
-    expect(mentionable_item.reload.slug).to eq('bbc-news')
+  it "uses plain text from onebox fallbacks" do
+    SiteSetting.mentionables_onebox_fallback = true
+    Oneboxer.stubs(:preview).returns("<h3><a>A <em>good</em> book</a></h3><p>A description</p>")
+    item = described_class.new(url: "https://example.com/book", slug: "book")
+    item.populate_metadata
+    item.save!
+    expect(item.name).to eq("A good book")
+    expect(item.description).to eq("A description")
+    expect(item.slug).to eq("book")
   end
 end

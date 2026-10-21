@@ -2,7 +2,6 @@
 
 class CreateMentionableItems < ActiveRecord::Migration[5.2]
   def up
-
     create_table :mentionable_items do |t|
       t.string :url, null: false
       t.string :name, null: false
