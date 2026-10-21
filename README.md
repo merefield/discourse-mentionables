@@ -288,6 +288,25 @@ data, loading older logs, refreshing counts, publishing mentions from both
 composers, preserving code spans, and disabling the feature. Request specs cover
 administrator access and safe filtering. The base tests use local topic tables and require no external credentials.
 
+### Ruby autoloading
+
+The Rails engine is bootstrapped once from `plugin.rb`. Zeitwerk loads models,
+controllers, serializers, and jobs from `app/`, plus support classes from `lib/`.
+File paths match their constants: `Mentionables::TopicTable` lives in
+`lib/mentionables/topic_table.rb`, and regular jobs live in `app/jobs/regular/`.
+The engine loads and reloads its routes without manual requires.
+
+Check loading from the Discourse checkout:
+
+```sh
+LOAD_PLUGINS=1 RAILS_ENV=test bin/rails zeitwerk:check
+LOAD_PLUGINS=1 RAILS_ENV=development bin/rails runner 'Rails.application.reloader.reload!'
+```
+
+Extensions should resolve base constants when their hooks run and use
+`reloadable_patch` for model associations or patches that must survive development
+reloads.
+
 ### Extension hooks
 
 Extensions can use these Discourse events without patching the importer:

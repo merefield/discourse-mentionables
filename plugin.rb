@@ -13,20 +13,29 @@ register_asset "stylesheets/common.scss"
 register_svg_icon "cart-shopping"
 register_svg_icon "table"
 
-after_initialize do
-  require_relative "lib/mentionables/engine"
-  require_relative "lib/mentionables/source"
-  require_relative "lib/mentionables/sources/topic_table"
-  require_relative "lib/mentionables/import_result"
-  require_relative "lib/mentionables/log"
-  require_relative "lib/mentionables/post_process"
-  require_relative "app/controllers/mentionables/admin_controller"
-  require_relative "app/serializers/mentionables/log_serializer"
-  require_relative "app/models/mentionable_item"
-  require_relative "config/routes"
-  require_relative "jobs/import_mentionable_items"
-  require_relative "jobs/destroy_mentionable_items"
+module ::Mentionables
+  PLUGIN_NAME = "mentionables"
 
+  def self.info
+    { total: MentionableItem.count }
+  end
+
+  def self.items_for_client
+    associations = []
+    DiscourseEvent.trigger(:mentionables_preload_items, associations)
+    MentionableItem
+      .includes(associations)
+      .map do |item|
+        attributes = item.as_json(only: %i[id slug name url image_url])
+        DiscourseEvent.trigger(:mentionables_serialize_item, item, attributes)
+        attributes
+      end
+  end
+end
+
+require_relative "lib/mentionables/engine"
+
+after_initialize do
   add_to_serializer(:site, :mentionable_items) { Mentionables.items_for_client }
 
   on(:before_post_process_cooked) do |doc, post|
