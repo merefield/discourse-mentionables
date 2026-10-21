@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 # name: discourse-mentionables
 # about: Allows users to +mention custom data in posts
-# email contacts: robert@pavilion.tech
 # version: 0.9.0
 # required_version: 2026.10.0-latest
 # authors: Robert Barrow, Angus McLeod
-# contact_emails: development@pavilion.tech
 # url: https://github.com/merefield/discourse-mentionables
 
 enabled_site_setting :mentionables_enabled
