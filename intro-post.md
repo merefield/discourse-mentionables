@@ -19,7 +19,9 @@ without having to remember the address.
 - **Start with URLs alone.** Importer retrieves names and generates slugs; add
   your own names and slugs as optional overrides.
 - **Search as you write.** Type `+` or use the composer toolbar button to search
-  your catalogue. Works in both the Markdown and rich text composers.
+  by name or slug. Works in both the Markdown and rich text composers.
+- **Thumbnails in suggestions.** Supply an optional `image_url` to show an image
+  beside the name in autocomplete. This is included in the base plugin.
 - **Readable inline links.** Mentions appear as compact pills using the item's
   display name, with a stable slug in the post's Markdown.
 - **Native oneboxes.** Put a mention on its own line to show a onebox using
@@ -34,9 +36,9 @@ without having to remember the address.
 ![Inline mention pills, a standalone onebox, and a floating preview](docs/images/onebox-preview.png)
 
 Onebox appearance depends on the destination and Discourse's normal onebox
-support. Unsupported destinations remain links. Floating cards require login;
-guests can still follow the destination link. Mentions in code are left alone,
-and mentions in lists and quotes stay inline.
+support. Unsupported destinations remain links. Fetching floating onebox previews
+requires login; guests can still follow the destination link. Mentions in code
+are left alone, and mentions in lists and quotes stay inline.
 
 ### Basic Mentionables and the Pro extension
 
@@ -49,6 +51,7 @@ installed **alongside** it; Pro includes the base features through that dependen
 | Keep the source topic in a restricted category                  |        Yes         |              Yes               |
 | Admin-only composer button to insert a table skeleton           |        Yes         |  Yes, including icon columns   |
 | Search with `+` in Markdown and rich text composers             |        Yes         |              Yes               |
+| Thumbnail images in autocomplete suggestions                    |        Yes         |              Yes               |
 | Inline mention pills and standalone native oneboxes             |        Yes         |              Yes               |
 | Floating previews on desktop hover or keyboard focus            |        Yes         | Yes, in the default hover mode |
 | Import from Google Sheets using a service account               |         —          |              Yes               |
@@ -61,6 +64,9 @@ Pro's `icon` and `icon_colour` columns add a coloured icon before the mention's
 name. For example, use `book` and `#2563eb` for a handbook. With
 `mentionables_pro_click_to_preview` enabled, clicking or tapping a pill opens its
 preview; the **Open original page** link in the preview takes you to the target.
+
+The Pro plugin extension is available for my **monthly** GitHub sponsors.
+[Sponsor me here](https://github.com/sponsors/merefield) to gain access to Pro :heart:
 
 ### Quick setup
 
@@ -94,6 +100,9 @@ these options within one table. If no title is available, the URL becomes the
 display name. Existing URLs retain their slugs when the source omits them.
 `image_url` and `description` are optional.
 
+For example, give **International Space Station** the slug `iss`: typing `+iss`
+finds it, as does searching by its full name.
+
 The importer reads the first unquoted table with a `url` column in the opening
 post. Replies, quoted tables, and fenced code samples are ignored. Source topics
 must be regular, undeleted topics, rather than personal messages.
@@ -107,8 +116,9 @@ imported catalogue private. Keep confidential information out of the table.
 
 Each import synchronizes by URL: matching URLs update, new URLs create records,
 and URLs removed from the source delete records. The complete source must be
-valid; duplicate URLs or slugs, invalid rows, fetch failures, and empty datasets
-leave the catalogue unchanged. Use **Delete all** for an intentional clear.
+valid; duplicate URLs or slugs, invalid rows, failures fetching the source, and
+empty datasets leave the catalogue unchanged. Use **Delete all** for an
+intentional clear.
 Source topics and spreadsheets are never modified. Pro's optional
 `mentionables_pro_sync_enabled` setting runs the same import every 12 hours.
 Reload the browser after importing. Existing cooked posts are not automatically
